@@ -129,9 +129,10 @@ array(
 				
 				function ajax_next_page_show(){
 					
-					$num = $_REQUEST['pagenum'];					
+					$num = $_REQUEST['pagenum'];
+					if($num <1)$num = 1;					
 					
-					$this -> OptionsPage(++$num,1);
+					$this -> OptionsPage($num,1);
 					
 					exit;
 					}
@@ -172,12 +173,20 @@ dbDelta($sql);
 	function OptionsPage( $pagenum=1, $from_ajax=0 ){
 		$dataA = $this ->getVideo($pagenum);
 		$total = $dataA['total'];
-		if(!$from_ajax)
+		$max_page = ceil($total/10);
+		
+		if(!$from_ajax){
 		echo $message = ($total==0)?'<div class="error">No Video found for The user</div>':
-		"<h2>Total {$total} Videos Found</h2>";	
+		"<h3>Total {$total} Videos Found - {$max_page} Page(s)</h3>";	
+		echo "<input type='hidden' id='max-page' value='$max_page'/>";
+
+	     if($total != 0 && $total !=''){
+		$toShow = ($total<10)? $total : 10;
 			
+		echo "<div id='videoNumMessage'><h4>Current Page: 1(Showing videos 1-{$toShow})</h4> </div>";
+		 
+		}
 		?>
-		<?php if(!$from_ajax){ ?>
 		<div class="paginate_video"><?php $this->paginate($total,$pagenum); ?></div>
 		
 		<div id="videoContents">
@@ -343,6 +352,7 @@ EOF;
 		
 		//total video items
 		$search=$parser->getElementsByTagName('feed')->item(0)->getAttribute('xmlns:openSearch');
+		$total=0;
 		$total = $parser -> getElementsByTagNameNS($search,'totalResults')->item(0)->nodeValue;
 
 
@@ -402,11 +412,15 @@ EOF;
 		//$pages = ceil($total/$items_per_page);
 		//$current_page = 1;
 		if($total>10){
-			$img = plugins_url('/' , __FILE__).'images/right.png';
+			$img_right = plugins_url('/' , __FILE__).'images/right.png';
+			$img_left = plugins_url('/' , __FILE__).'images/left.png';
 	?>
 			
-		<button id="show-next" class="1">
-		<img src="<?php echo $img ?>"/>
+		<button id="show-prev" style="display:none">
+		<img src="<?php echo $img_left ?>"/>
+		</button>
+		<button id="show-next"  class="1">
+		<img src="<?php echo $img_right ?>"/>
 		</button>
 <?php
 	 }
