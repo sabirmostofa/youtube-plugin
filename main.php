@@ -171,7 +171,11 @@ dbDelta($sql);
 	
 	
 	function OptionsPage( $pagenum=1, $from_ajax=0 ){
+		if (isset($_POST['addVideoUnique']))						
+		update_option('videoUserYouTube', trim($_POST['videoUserYouTube'][0]));
+		
 		$dataA = $this ->getVideo($pagenum);
+		if(is_array($dataA)){
 		$total = $dataA['total'];
 		$max_page = ceil($total/10);
 		
@@ -209,8 +213,8 @@ dbDelta($sql);
 						</tfoot>
 						<tbody>
 							
-						<?php if (isset($_POST['addVideoUnique']))						
-							update_option('videoUser', trim($_POST['videoUser'][0]));
+						<?php 
+						
 							$this -> renderVideos($dataA);
 							
 							?>
@@ -219,7 +223,10 @@ dbDelta($sql);
 						</tbody>
 					</table>
 				</div>
-				<?php if(!$from_ajax){ ?>
+				<?php 
+			}//end of is_array
+				
+				if(!$from_ajax){ ?>
 				</div>
 		
 		
@@ -228,7 +235,7 @@ dbDelta($sql);
 		<form method="post" action="admin.php?page=wpAddVideo">
 		<table cellpadding=3>
 		<tr><td>
-		<input type="text" name="videoUser[]" value="<?php echo get_option('videoUser')?>" style="width:10em" />&nbsp;</td>
+		<input type="text" name="videoUserYouTube[]" value="<?php echo get_option('videoUserYouTube')?>" style="width:10em" />&nbsp;</td>
 		<td>
 		<p class="submit"><input type="submit" name="addVideoUnique" class="button-primary" value="<?php _e('GET Video') ?>" /></p>
 		</td>
@@ -236,9 +243,8 @@ dbDelta($sql);
 		</table>	
 		
 		</form>
-		<?php }?>
-		
-	<?php
+		<?php }
+	
 	}//endof options page
 	
 	
@@ -316,7 +322,7 @@ dbDelta($sql);
 		   
 		   $start=($pagenum==1)?1:($pagenum-1)*10+1;
 		   
-		   $user = get_option('videoUser');
+		   $user = get_option('videoUserYouTube');
 		if(!$user)return;	
 		
 		//sample author  wataahISg00d
