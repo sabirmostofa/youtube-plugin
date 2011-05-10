@@ -97,7 +97,7 @@ $('button.remove').bind('click',function(){
 		
 });
 
-$('button#show-next').bind('click', function(){
+$('input#show-next').bind('click', function(){
 	
 	
 	var pagenum=$(this).attr('class');
@@ -174,7 +174,7 @@ $('button#show-next').bind('click', function(){
 	
 //show-prev button action
 
-$('button#show-prev').bind('click', function(){
+$('input#show-prev').bind('click', function(){
 	var pagenum=$(this).attr('class');
 	var self=$(this);
 	pagenum= Number(pagenum);

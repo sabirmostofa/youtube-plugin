@@ -50,7 +50,7 @@ array(
 		
 
 	function CreateMenu(){
-		add_submenu_page('theme-options.php','Add Video','WP Add Video','activate_plugins','wpAddVideo',array($this,'OptionsPage'));
+		add_submenu_page('theme-options.php','Add From YouTube','Add From YouTube','activate_plugins','wpAddVideo',array($this,'OptionsPage'));
 		add_submenu_page('theme-options.php','Manage Video','Manage Playlist','activate_plugins','wpManageVideo',array($this,'videoManage'));
 	}
 	
@@ -249,7 +249,7 @@ dbDelta($sql);
 	
 	function videoManage(){
 	?>
-		
+		<div style="text-align:center;margin 15px 0"> <h3>Manage Video Playlist</h3></div>
 		<div class="wrap">
 					<table class="widefat">
 						<thead>
@@ -282,8 +282,8 @@ dbDelta($sql);
 						$image = 'http://i.ytimg.com/vi/'.$id.'/1.jpg';
 						
 						echo '<td>',$title,'</td>';
-						//echo '<td>','<img src="'.$image.'"/>','</td>';
-						echo '<td></td>';
+						echo '<td>','<img src="'.$image.'"/>','</td>';
+						
 						if($stat == 1)
 						echo '<td>',Active,'</td>';
 						else 
@@ -416,12 +416,10 @@ EOF;
 			$img_left = plugins_url('/' , __FILE__).'images/left.png';
 	?>
 			
-		<button id="show-prev" style="display:none">
-		<img src="<?php echo $img_left ?>"/>
-		</button>
-		<button id="show-next"  class="1">
-		<img src="<?php echo $img_right ?>"/>
-		</button>
+		<input  type='image' src='<?php echo $img_left ?>' id="show-prev" style="display:none" value=''/>
+		<input class='1' type='image' src='<?php echo $img_right ?>' id="show-next" value=''/>
+		
+		
 <?php
 	 }
 		 
