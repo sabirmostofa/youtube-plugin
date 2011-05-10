@@ -184,11 +184,39 @@ $('input#show-prev').bind('click', function(){
       )
 	
 	
-	});
-
-
-
-	
+	});	
 	//end of show-prev
+	
+	
+	//
+	$('input#areaSubmit').bind('click',function(){
+	var url = $('#areaId').val();
+	var self= $(this);
+	
+	var title= '';
+	
+
+			
+		$.ajax(
+		{
+			type:"post",
+			url:addVideoSettings.ajaxurl,
+		    timeout:5000,
+		    data:{
+			 'action':'ajax_getId',
+			 'url':url			  
+			},
+			
+		    success: function(data){
+				alert(data);
+				$('#areaMessage').css('display','inline').html('Video has been uploaded successfully');
+		
+			}
+	   }
+       
+       )
+	});
+	
+	//
 	
 	});

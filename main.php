@@ -27,6 +27,7 @@ class wpAddVideo{
 		add_action( 'wp_ajax_ajax_toggle', array($this,'ajax_toggle' ));
 		add_action( 'wp_ajax_ajax_remove', array($this,'ajax_remove' ));
 		add_action( 'wp_ajax_show_next', array($this,'ajax_next_page_show'));
+		add_action( 'wp_ajax_ajax_getId', array($this,'ajax_process_insert'));
 		register_activation_hook(__FILE__, array($this, 'create_table'));
 		
 		}
@@ -143,6 +144,76 @@ array(
 					
 					exit;
 					}
+					
+					
+					
+					function ajax_process_insert(){						
+						$code = trim($_REQUEST['url']);
+						if(!preg_match('/[a-zA-Z0-9]/',$code))exit;
+						
+						//id only
+						if(!preg_match('?/?',$code)){
+							echo $id = trim($code,'?');							
+						}
+						
+						//if url
+						if(preg_match('?http://www.youtube.com/watch?',$code)){
+							
+							if(preg_match('/v=+.[^&]+&/',$code,$test))
+							echo $id = trim(str_replace('v=','',$test[0]),'&');
+							
+							}
+						
+						
+						//if shortcode
+					if(preg_match('/youtu\.be/',$code,$test)){
+							  echo $id = str_replace('http://youtu.be/','',$code);							   
+							
+							}
+							
+							//if iframe
+					if(preg_match('/<iframe/',$code,$test)){
+			
+									$dom = new DOMDocument();
+									$dom->loadHTML($code);			
+									$a= $dom->getElementsByTagName('iframe')->item(0)->getAttribute('src');
+									preg_match('$/+.[^/]+\?$',$a,$test);
+									echo $id = trim($test[0],'/?');
+			       }
+					
+					//if old object
+					
+						if(preg_match('/<object/',$code)){								
+			                    $dom = new DOMDocument();
+			                    @$dom->loadHTML($code);			
+			                      $a= $dom->getElementsByTagName('embed')->item(0)->getAttribute('src');
+			                     	preg_match('$/+.[^/]+\?$',$a,$test);
+			                         $id = trim($test[0],'/?');		
+			                         echo $id;
+								
+							}
+							
+							$this -> add_single_video($id);
+						
+						
+						//http://youtu.be/wagn8Wrmzuc
+						//<iframe width="560" height="349" src="http://www.youtube.com/embed/wagn8Wrmzuc?rel=0" frameborder="0" allowfullscreen></iframe>
+						//<object width="560" height="349"><param name="movie" value="http://www.youtube.com/v/wagn8Wrmzuc?fs=1&amp;hl=en_US&amp;rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/wagn8Wrmzuc?fs=1&amp;hl=en_US&amp;rel=0" type="application/x-shockwave-flash" width="560" height="349" allowscriptaccess="always" allowfullscreen="true"></embed></object>	
+						//http://www.youtube.com/watch/v=?84343&d
+					
+						
+						
+						exit;					
+						}
+						
+						
+						function add_single_video($d){
+							
+							
+							
+							
+							
+							}
 		
 		
 	function create_table(){
@@ -182,11 +253,35 @@ dbDelta($sql);
 		update_option('videoUserYouTube', trim($_POST['videoUserYouTube'][0]));
 		
 		$dataA = $this ->getVideo($pagenum);
-		if(is_array($dataA)){
+		
+		//--------
+		if(!$from_ajax):
+		$this->direct_add();
+		?>
+			<div class="wrap"><h3>Insert YouTube UserName to List videos</h3>
+		<form method="post" action="admin.php?page=wpAddVideo">
+		<table cellpadding=3>
+		<tr><td>
+		<input type="text" name="videoUserYouTube[]" value="<?php echo get_option('videoUserYouTube')?>" style="width:10em" />&nbsp;</td>
+		<td>
+		<p class="submit"><input type="submit" name="addVideoUnique" class="button-primary" value="<?php _e('List  Videos') ?>" /></p>
+		</td>
+		</tr>
+		</table>	
+		
+		</form>
+		</div>
+		
+		<?php
+		endif;
+		//----
+		
+		if(is_array($dataA)):
 		$total = $dataA['total'];
 		$max_page = ceil($total/10);
 		
-		if(!$from_ajax){
+		
+		if(!$from_ajax):
 		echo $message = ($total==0)?'<div class="error">No Video found for The user</div>':
 		"<h3>Total {$total} Videos Found - {$max_page} Page(s)</h3>";	
 		echo "<input type='hidden' id='max-page' value='$max_page'/>";
@@ -201,56 +296,17 @@ dbDelta($sql);
 		<div class="paginate_video"><?php $this->paginate($total,$pagenum); ?></div>
 		
 		<div id="videoContents">
-		<?php } ?>
-		<div class="wrap">
-					<table class="widefat">
-						<thead>
-							<tr>
-								<th>Video Title</th>
-								<th>Thumbnail</th>
-								<th>Action<th>
-							</tr>
-						</thead>
-						<tfoot>
-							<tr>
-								<th>Video Title</th>
-								<th>Thumbnail</th>
-								<th>Action<th>
-							</tr>
-						</tfoot>
-						<tbody>
-							
-						<?php 
-						
-							$this -> renderVideos($dataA);
-							
-							?>
-						
-							
-						</tbody>
-					</table>
-				</div>
-				<?php 
-			}//end of is_array
-				
-				if(!$from_ajax){ ?>
-				</div>
+		<?php 
+		endif;
+		$this->common_ajax($dataA); 
 		
 		
-		
-		<div class="wrap"><h2>Insert your YouTube UserName</h2>
-		<form method="post" action="admin.php?page=wpAddVideo">
-		<table cellpadding=3>
-		<tr><td>
-		<input type="text" name="videoUserYouTube[]" value="<?php echo get_option('videoUserYouTube')?>" style="width:10em" />&nbsp;</td>
-		<td>
-		<p class="submit"><input type="submit" name="addVideoUnique" class="button-primary" value="<?php _e('GET Video') ?>" /></p>
-		</td>
-		</tr>
-		</table>	
-		
-		</form>
-		<?php }
+		if(!$from_ajax):
+		?>
+		</div>
+		<?php	
+		 endif;
+		 endif;
 	
 	}//endof options page
 	
@@ -321,6 +377,62 @@ dbDelta($sql);
 
 <?php
        }// end of video manage submenu page
+       
+       
+       
+       function common_ajax($dataA){
+		   ?>
+		   	<div class="wrap">
+					<table class="widefat">
+						<thead>
+							<tr>
+								<th>Video Title</th>
+								<th>Thumbnail</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th>Video Title</th>
+								<th>Thumbnail</th>
+								<th>Action</th>
+							</tr>
+						</tfoot>
+						<tbody>
+							
+						<?php 
+						
+							$this -> renderVideos($dataA);
+							
+							?>
+						
+							
+						</tbody>
+					</table>
+				</div>
+	<?php	   
+		   }
+		   
+		   
+		   //direct add from code
+		   function direct_add(){
+			    
+			   echo '<h3>Enter  Youtube Video  ID/Url to Add in the Playlist</h3>';
+			   ?>
+			   <table>
+			   <tr>
+			   <td>		  
+			   <?php echo '<textarea id="areaId" rows="5" cols="50"></textarea>'; ?>
+			   </td>
+			   <td>
+			   <input class='button-primary' type='submit' id='areaSubmit' value='Add To Playslist'/>
+			   </td>
+			   </tr>
+			    </table>
+			    <div class='updated' id='areaMessage'></div>
+			   <?php
+			   
+			   }
        
        
        
@@ -456,7 +568,7 @@ EOF;
 	       echo '<td><b><h3>Added in the playlist</h3></b></td></tr>';
 	       
 	      else	
-	       echo '<td><button id="',$yo['id'],'" class="primary" name="add">Add</button></td></tr>';	
+	       echo '<td><button id="',$yo['id'],'" class="primary" name="add">Add to Playlist</button></td></tr>';	
 	 }
 		
 		
