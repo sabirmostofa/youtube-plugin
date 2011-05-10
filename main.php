@@ -26,6 +26,7 @@ class wpAddVideo{
 		add_action( 'wp_ajax_myajax-submit', array($this,'ajax_handle' ));
 		add_action( 'wp_ajax_ajax_toggle', array($this,'ajax_toggle' ));
 		add_action( 'wp_ajax_ajax_remove', array($this,'ajax_remove' ));
+		add_action( 'wp_ajax_show_next', array($this,'ajax_next_page_show'));
 		register_activation_hook(__FILE__, array($this, 'create_table'));
 		
 		}
@@ -116,6 +117,17 @@ array(
 				exit;
 				
 				}
+				
+				
+				
+				function ajax_next_page_show(){
+					
+					$num = $_REQUEST['pagenum'];					
+					
+					$this -> OptionsPage(++$num,1);
+					
+					exit;
+					}
 		
 		
 	function create_table(){
@@ -150,9 +162,19 @@ dbDelta($sql);
 	
 	
 	
-	function OptionsPage(){
+	function OptionsPage( $pagenum=1, $from_ajax=0 ){
+		$dataA = $this ->getVideo($pagenum);
+		$total = $dataA['total'];
+		if(!$from_ajax)
+		echo $message = ($total==0)?'<div class="error">No Video found for The user</div>':
+		"<h2>Total {$total} Videos Found</h2>";	
+			
 		?>
+		<?php if(!$from_ajax){ ?>
+		<div class="paginate"><?php $this->paginate($pagenum); ?></div>
 		
+		<div id="videoContents">
+		<?php } ?>
 		<div class="wrap">
 					<table class="widefat">
 						<thead>
@@ -173,13 +195,15 @@ dbDelta($sql);
 							
 						<?php if (isset($_POST['addVideoUnique']))						
 							update_option('videoUser', trim($_POST['videoUser'][0]));
-							$this -> renderVideos();
+							$this -> renderVideos($dataA);
 							
 							?>
 						
 							
 						</tbody>
 					</table>
+				</div>
+				<?php if(!$from_ajax){ ?>
 				</div>
 		
 		
@@ -193,11 +217,10 @@ dbDelta($sql);
 		<p class="submit"><input type="submit" name="addVideoUnique" class="button-primary" value="<?php _e('GET Video') ?>" /></p>
 		</td>
 		</tr>
-		</table>
-		
-		
+		</table>	
 		
 		</form>
+		<?php }?>
 		
 	<?php
 	}//endof options page
@@ -269,22 +292,26 @@ dbDelta($sql);
 
 <?php
        }// end of video manage submenu page
-		
-		
-		
-		
-
-			
-	
-	function renderVideos(){
-		$user = get_option('videoUser');
+       
+       
+       
+       
+       function getVideo($pagenum=1){
+		   
+		   $start=($pagenum==1)?1:($pagenum-1)*10+1;
+		   
+		   $user = get_option('videoUser');
 		if(!$user)return;	
 		
 		//sample author  wataahISg00d
 		
 		// http://i.ytimg.com/vi/{$user}/1.jpg sample image
 		
-		$url = "http://gdata.youtube.com/feeds/api/videos?author={$user}&max-results=10";
+		
+		$url = ($start>1)?
+		"http://gdata.youtube.com/feeds/api/videos?author={$user}&start-index={$start}&max-results=10":
+		"http://gdata.youtube.com/feeds/api/videos?author={$user}&max-results=10"
+		;
 		
 		$content_url = 'http://www.youtube.com/v/EgHY53dOZ-U?f=videos&amp;app=youtube_gdata';
 
@@ -306,6 +333,10 @@ EOF;
 
 		$parser->documentURI;
 		$nURI=$parser->getElementsByTagName('feed')->item(0)->getAttribute('xmlns:media');
+		
+		//total video items
+		$search=$parser->getElementsByTagName('feed')->item(0)->getAttribute('xmlns:openSearch');
+		$total = $parser -> getElementsByTagNameNS($search,'totalResults')->item(0)->nodeValue;
 
 
 		$entryNumber=$parser->getElementsByTagName('entry')->length;
@@ -345,9 +376,38 @@ EOF;
 		 endforeach;
 		 
 		 endforeach;
+		$dataA['total'] = $total;
+		   
+		   return($dataA);
+		   
+		   
+		   
+		   
+		   
+		   }//end of getVideo
 		
+		
+		
+     //pagination
+     
+     function paginate($pagenum,$items_per_page=10){
+		// if ($total<=10)return;		 
+		//$pages = ceil($total/$items_per_page);
+		//$current_page = 1;
+		
+		echo '<button id="show-next" class="1">Next</button>';
 		 
+		 
+		 
+		 }
 		
+		
+
+			
+	
+	function renderVideos($dataA){		 
+		
+		 array_pop($dataA);
 		
 		 foreach($dataA as $yo){
 		$image = 'http://i.ytimg.com/vi/'.$yo['id'].'/1.jpg';

@@ -14,7 +14,7 @@ $('button.primary').bind('click',function(){
 		{
 			type:"post",
 			url:addVideoSettings.ajaxurl,
-		timeout:3000,
+		timeout:5000,
 		data:{
 			 'action':'myajax-submit',
 			 'id':id,
@@ -42,7 +42,7 @@ $('button.action').bind('click',function(){
 		{
 			type:"post",
 			url:addVideoSettings.ajaxurl,
-		timeout:3000,
+		timeout:5000,
 		data:{
 			 'action':'ajax_toggle',
 			 'id':id			  
@@ -75,7 +75,7 @@ $('button.remove').bind('click',function(){
 		{
 			type:"post",
 			url:addVideoSettings.ajaxurl,
-		    timeout:3000,
+		    timeout:5000,
 		    data:{
 			 'action':'ajax_remove',
 			 'id':id
@@ -96,6 +96,66 @@ $('button.remove').bind('click',function(){
 	
 		
 });
+
+$('button#show-next').bind('click', function(){
+	var pagenum=$(this).attr('class');
+	var self=$(this);
+	pagenum= Number(pagenum);
+		$.ajax(
+		{
+			type:"post",
+			url:addVideoSettings.ajaxurl,
+		    timeout:10000,
+		    data:{
+			 'action':'show_next',
+			 'pagenum': pagenum
+			  
+			},
+			
+		success: function(data){
+		
+			$('#videoContents').html(data).fadeOut('slow').fadeIn('slow');			
+				self.attr('class',++pagenum);
+				
+				//rebind
+	$('button.primary').bind('click',function(){	
+	var id= $(this).attr('id');
+	var parent=$(this).parent();
+	var title= '';
+	
+	$('.'+id).each(function(){
+		title=$(this).html();		
+		});
+			
+		$.ajax(
+		{
+			type:"post",
+			url:addVideoSettings.ajaxurl,
+		timeout:5000,
+		data:{
+			 'action':'myajax-submit',
+			 'id':id,
+			 'title':title
+			  
+			},
+			
+		success: function(data){
+			parent.html('<b><h3>Added in the playlist</h3></b>').hide().fadeIn('slow');
+			}
+	   }
+       
+       )
+	});
+				
+				
+		//end of rebind
+			}
+	   }
+       
+      )
+	
+	
+	});
 	
 	
 	});
