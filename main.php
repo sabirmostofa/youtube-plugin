@@ -208,10 +208,13 @@ array(
 						
 						
 						function add_single_video($d){
+							$id = trim($id);
+							$url = "http://gdata.youtube.com/feeds/api/videos/{$id}?v=2";
 							
-							
-							
-							
+							$parser=new DOMDocument();
+		                    $parser->load($url);		
+		                    $title = $parser->getElementsByTagName('title')->item(0)->nodeValue;
+		                    echo $title;		
 							
 							}
 		
