@@ -31,7 +31,9 @@ class wpAddVideo{
 		
 		}
 		
-		function add_scripts(){			
+		function add_scripts(){
+		if(preg_match('/wpAddVideo/',$_SERVER['REQUEST_URI']) || preg_match('/wpManageVideo/',$_SERVER['REQUEST_URI'])){
+					
 			wp_enqueue_script('jquery');
             wp_enqueue_script('add_video_script',plugins_url('/' , __FILE__).'js/script.js');	
             wp_localize_script('add_video_script', 'addVideoSettings',
@@ -39,19 +41,24 @@ array(
 'ajaxurl'=>admin_url('admin-ajax.php'),
 'pluginurl' => plugins_url('/' , __FILE__)
 
-));	
+)
+);	
 
   wp_register_style('add_video_css', plugins_url('/' , __FILE__).'css/style.css', false, '1.0.0');
     wp_enqueue_style('add_video_css');
+    
+ }
 	
-			
+		
 			}
 			
 		
 
 	function CreateMenu(){
 		add_submenu_page('theme-options.php','Add From YouTube','Add From YouTube','activate_plugins','wpAddVideo',array($this,'OptionsPage'));
-		add_submenu_page('theme-options.php','Manage Video','Manage Playlist','activate_plugins','wpManageVideo',array($this,'videoManage'));
+	    add_submenu_page('theme-options.php','Manage Video','Manage Playlist','activate_plugins','wpManageVideo',array($this,'videoManage'));
+
+
 	}
 	
 	function ajax_handle(){

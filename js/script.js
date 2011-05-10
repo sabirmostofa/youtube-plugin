@@ -1,7 +1,7 @@
 
 jQuery(document).ready(function($){
 	
-$('button.primary').bind('click',function(){
+	$.fn.wpAddVideo = function(){	
 	var id= $(this).attr('id');
 	var parent=$(this).parent();
 	var title= '';
@@ -14,8 +14,8 @@ $('button.primary').bind('click',function(){
 		{
 			type:"post",
 			url:addVideoSettings.ajaxurl,
-		timeout:5000,
-		data:{
+		    timeout:5000,
+		    data:{
 			 'action':'myajax-submit',
 			 'id':id,
 			 'title':title
@@ -28,7 +28,9 @@ $('button.primary').bind('click',function(){
 	   }
        
        )
-	});
+	};
+	
+$('button.primary').bind('click',$.fn.wpAddVideo);
 	
 $('button.action').bind('click',function(){
 	var id= $(this).attr('id');
@@ -42,13 +44,13 @@ $('button.action').bind('click',function(){
 		{
 			type:"post",
 			url:addVideoSettings.ajaxurl,
-		timeout:5000,
-		data:{
+		    timeout:5000,
+		    data:{
 			 'action':'ajax_toggle',
 			 'id':id			  
 			},
 			
-		success: function(data){
+		    success: function(data){
 			if(self.text()=="Suspend"){
 			self.text("Add").hide().fadeIn('slow');		
 			self.parent().prev().text("Suspended").hide().fadeIn('slow');
@@ -80,15 +82,13 @@ $('button.remove').bind('click',function(){
 			 'action':'ajax_remove',
 			 'id':id
 			  
-			},
+			    },
 			
-		success: function(data){
-			if(data==1){
-				self.parent().parent().fadeOut('slow');
+		     success: function(data){
+			   if(data==1){
+				self.parent().parent().fadeOut('slow');		
 				
-				
-				
-				}
+				    }
 			}
 	   }
        
@@ -132,37 +132,8 @@ $('input#show-next').bind('click', function(){
 				self.hide();
 				
 				//rebind
-	$('button.primary').bind('click',function(){	
-	var id= $(this).attr('id');
-	var parent=$(this).parent();
-	var title= '';
-	
-	$('.'+id).each(function(){
-		title=$(this).html();		
-		});
-			
-		$.ajax(
-		{
-			type:"post",
-			url:addVideoSettings.ajaxurl,
-		timeout:5000,
-		data:{
-			 'action':'myajax-submit',
-			 'id':id,
-			 'title':title
-			  
-			},
-			
-		success: function(data){
-			parent.html('<b><h3>Added in the playlist</h3></b>').hide().fadeIn('slow');
-			}
-	   }
-       
-       )
-	});
-				
-				
-		//end of rebind
+				$('button.primary').bind('click',$.fn.wpAddVideo);				
+		       //end of rebind
 			}
 	   }
        
@@ -205,37 +176,8 @@ $('input#show-prev').bind('click', function(){
 				if(Number(self.attr('class')) == 0)self.hide();
 				
 				//rebind
-	$('button.primary').bind('click',function(){	
-	var id= $(this).attr('id');
-	var parent=$(this).parent();
-	var title= '';
-	
-	$('.'+id).each(function(){
-		title=$(this).html();		
-		});
-			
-		$.ajax(
-		{
-			type:"post",
-			url:addVideoSettings.ajaxurl,
-		timeout:5000,
-		data:{
-			 'action':'myajax-submit',
-			 'id':id,
-			 'title':title
-			  
-			},
-			
-		success: function(data){
-			parent.html('<b><h3>Added in the playlist</h3></b>').hide().fadeIn('slow');
-			}
-	   }
-       
-       )
-	});
-				
-				
-		//end of rebind
+               $('button.primary').bind('click',$.fn.wpAddVideo);				
+		        //end of rebind
 			}
 	   }
        
