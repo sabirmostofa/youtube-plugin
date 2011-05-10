@@ -113,6 +113,12 @@ $('button#show-next').bind('click', function(){
 			},
 			
 		success: function(data){
+			
+			var img = addVideoSettings.pluginurl+'/images/left.png';
+			img = '<button id="show-prev"><img src="'+img+'"/>';
+			
+			if($('#show-prev')== false)
+			self.parent().prepend(img);
 		
 			$('#videoContents').html(data).fadeOut('slow').fadeIn('slow');			
 				self.attr('class',++pagenum);

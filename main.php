@@ -22,7 +22,7 @@ if(isset($wpAddVideo)) {
 class wpAddVideo{
 	
 	function __construct(){
-		add_action('admin_enqueue_scripts' , array($this,'add_scripts'));
+		add_action('admin_enqueue_scripts' , array($this,'add_scripts'));	
 		add_action( 'wp_ajax_myajax-submit', array($this,'ajax_handle' ));
 		add_action( 'wp_ajax_ajax_toggle', array($this,'ajax_toggle' ));
 		add_action( 'wp_ajax_ajax_remove', array($this,'ajax_remove' ));
@@ -36,11 +36,18 @@ class wpAddVideo{
             wp_enqueue_script('add_video_script',plugins_url('/' , __FILE__).'js/script.js');	
             wp_localize_script('add_video_script', 'addVideoSettings',
 array(
-'ajaxurl'=>admin_url('admin-ajax.php')
+'ajaxurl'=>admin_url('admin-ajax.php'),
+'pluginurl' => plugins_url('/' , __FILE__)
 
-));		
+));	
+
+  wp_register_style('add_video_css', plugins_url('/' , __FILE__).'css/style.css', false, '1.0.0');
+    wp_enqueue_style('add_video_css');
+	
 			
 			}
+			
+		
 
 	function CreateMenu(){
 		add_submenu_page('theme-options.php','Add Video','WP Add Video','activate_plugins','wpAddVideo',array($this,'OptionsPage'));
@@ -171,7 +178,7 @@ dbDelta($sql);
 			
 		?>
 		<?php if(!$from_ajax){ ?>
-		<div class="paginate"><?php $this->paginate($pagenum); ?></div>
+		<div class="paginate_video"><?php $this->paginate($total,$pagenum); ?></div>
 		
 		<div id="videoContents">
 		<?php } ?>
@@ -390,16 +397,21 @@ EOF;
 		
      //pagination
      
-     function paginate($pagenum,$items_per_page=10){
+     function paginate($total,$items_per_page=10){
 		// if ($total<=10)return;		 
 		//$pages = ceil($total/$items_per_page);
 		//$current_page = 1;
-		
-		echo '<button id="show-next" class="1">Next</button>';
+		if($total>10){
+			$img = plugins_url('/' , __FILE__).'images/right.png';
+	?>
+			
+		<button id="show-next" class="1">
+		<img src="<?php echo $img ?>"/>
+		</button>
+<?php
+	 }
 		 
-		 
-		 
-		 }
+		}
 		
 		
 
