@@ -190,10 +190,22 @@ $('input#show-prev').bind('click', function(){
 	
 	//
 	$('input#areaSubmit').bind('click',function(){
+	var title= $('#directTitle').val();
+	if(title == 'Enter Title Here' || title == '') {
+		alert('Add a title for the video');
+		return false;
+		}
 	var url = $('#areaId').val();
+	
+	if(url =='') {
+		alert('Add value in the url textarea');
+		return false;
+		
+		}
+	
 	var self= $(this);
 	
-	var title= '';
+	
 	
 
 			
@@ -204,12 +216,13 @@ $('input#show-prev').bind('click', function(){
 		    timeout:5000,
 		    data:{
 			 'action':'ajax_getId',
-			 'url':url			  
+			 'url':url,
+			 'title':title			  
 			},
 			
 		    success: function(data){
-				alert(data);
-				$('#areaMessage').css('display','inline').html('Video has been uploaded successfully');
+							
+				$('#areaMessage').css('display','inline').html('Video has been added successfully').fadeIn('slow');
 		
 			}
 	   }

@@ -193,7 +193,18 @@ array(
 								
 							}
 							
-							$this -> add_single_video($id);
+							echo $title = $_REQUEST['title'];
+							global $wpdb;
+							
+							if($this->exists_in_table($id))exit;
+		                    $wpdb->insert( 'wp_video_list', 
+					       array( 'video_id' => $id,
+					            'video_title' => $title							
+						        ),
+							 array( '%s', '%s') 
+					           );
+							
+							//$this -> add_single_video($id);
 						
 						
 						//http://youtu.be/wagn8Wrmzuc
@@ -422,15 +433,35 @@ dbDelta($sql);
 			    
 			   echo '<h3>Enter  Youtube Video  ID/Url to Add in the Playlist</h3>';
 			   ?>
-			   <table>
+			   <table width='70%'>
+			   
 			   <tr>
-			   <td>		  
+			   <td><h4>Video Title:</h4> </td>
+			   </tr>
+			   
+			  
+			  
+			   
+			   <tr>
+			   <td><input style='width:350px' type='text' id='directTitle' value='Enter Title Here'/> </td>
+			   </tr>
+			   
+			     <tr>
+			   <td><h4>Video Id/URL/Embed URL/Short URL:</h4> </td>
+			   </tr>
+			   
+			      <tr>
+			     <td>	  
 			   <?php echo '<textarea id="areaId" rows="5" cols="50"></textarea>'; ?>
-			   </td>
+			   </td>			   
+			    </tr>
+			  
+			    <tr>
 			   <td>
 			   <input class='button-primary' type='submit' id='areaSubmit' value='Add To Playslist'/>
 			   </td>
-			   </tr>
+			    </tr>
+			   
 			    </table>
 			    <div class='updated' id='areaMessage'></div>
 			   <?php
